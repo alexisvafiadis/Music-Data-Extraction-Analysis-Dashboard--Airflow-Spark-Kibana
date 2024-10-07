@@ -67,7 +67,7 @@ The project is organized into several key steps within the data pipeline:
 
 ### Kibana Dashboard:
 - **Song Trends & Taste**  
-  ![Song Trends Image](link-to-song-trends-image)
+  ![Song Trends Image](images/trends)
   
 - **Genre Traits & Appeal**  
   ![Genre Traits Image](link-to-genre-traits-image)
