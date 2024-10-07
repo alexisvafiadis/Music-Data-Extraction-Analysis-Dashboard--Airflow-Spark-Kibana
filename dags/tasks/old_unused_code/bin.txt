@@ -1,0 +1,123 @@
+
+
+# 1. Cross-Country Popularity Trends
+cross_country_popularity = spark.sql("""
+    SELECT track_name, artist, COUNT(DISTINCT country) as countries_count, AVG(spotify_popularity) as avg_popularity
+    FROM spotify
+    GROUP BY track_name, artist
+    HAVING countries_count > 1
+    ORDER BY avg_popularity DESC
+""")
+cross_country_popularity.write.save(f"{datalake_dir}combined/cross_country_popularity.parquet", format="parquet",
+                                    mode="overwrite")
+return
+
+# 2. Genre Influence and Trends (assuming genre data exists in Spotify data)
+if False:
+    genre_trends = spark.sql("""
+        SELECT genre, AVG(spotify_popularity) as avg_popularity
+        FROM spotify
+        GROUP BY genre
+        ORDER BY avg_popularity DESC
+    """)
+    genre_trends.write.save(f"{datalake_dir}combined/genre_trends.parquet", format="parquet", mode="overwrite")
+
+# 3. Artist Performance Across Platforms
+artist_performance = spark.sql("""
+      SELECT s.artist, s.spotify_popularity, AVG(l.lastfm_popularity) AS lastfm_popularity_avg,
+      FROM spotify s
+      JOIN lastfm l ON s.artist = l.artist AND s.track = l.track
+      GROUP BY s.artist, s.spotify_popularity
+  """)
+# artist_performance.write.save(f"{datalake_dir}combined/artist_performance.parquet", format="parquet", mode="overwrite")
+
+
+   # 4. New Tracks Performance
+new_tracks_performance = spark.sql("""
+    SELECT track, artist, release_date, spotify_popularity
+    FROM spotify
+    WHERE track_age_days < 30
+    ORDER BY spotify_popularity DESC
+""")
+new_tracks_performance.write.save(f"{datalake_dir}combined/new_tracks_performance.parquet", format="parquet",
+                                  mode="overwrite")
+
+
+   # Most viral tracks released in the last week
+    viral_tracks = spark.sql("""
+        SELECT track, artist, spotify_popularity
+        FROM spotify
+        WHERE track_age_days < 7
+        ORDER BY spotify_popularity DESC
+    """)
+    viral_tracks.write.save(f"{datalake_dir}combined/viral_tracks.parquet", format="parquet", mode="overwrite")
+
+    # Factors for artist popularity
+    aggregated_artist_data = spark.sql("""
+    SELECT
+        a.artist,
+        AVG(a.album_popularity) AS avg_album_popularity,
+        MAX(a.album_popularity) AS max_album_popularity,
+        MIN(a.album_popularity) AS min_album_popularity,
+        AVG(a.n_artists) AS avg_n_artists,
+        AVG(a.available_markets) AS avg_available_markets,
+        AVG(a.total_tracks) AS avg_total_tracks,
+        AVG(a.n_words_in_name) AS avg_words_in_album_name,
+        AVG(months_between(current_date(), to_date(a.release_date, 'yyyy-MM-dd'))) AS avg_months_since_release,
+        AVG(s.spotify_popularity) AS avg_track_popularity,
+        MAX(s.spotify_popularity) AS max_track_popularity,
+        COUNT(DISTINCT a.album_name) AS total_albums
+    FROM artists a
+    JOIN spotify s ON a.artist = s.artist
+    GROUP BY a.artist
+    ORDER BY avg_track_popularity DESC
+    """)
+
+    aggregated_artist_data.write.save(f"{datalake_dir}combined/artist_popularity_factors.parquet", format="parquet", mode="overwrite")
+
+    unique_spotify_top_songs = spotify_df.select("track", "artist").distinct()
+    unique_lastfm_top_songs = lastfm_df.select("track", "artist").distinct()
+    unique_spotify_top_songs.write.save(f"{datalake_dir}combined/unique_spotify_top_songs.parquet", format="parquet", mode="overwrite")
+
+    if debug:
+        print("Cross-Country Popularity Trends:")
+        cross_country_popularity.show()
+        print("Artist Performance Across Platforms:")
+        artist_performance.show()
+        print("New Tracks Performance:")
+        new_tracks_performance.show()
+        print("Explicit Lyrics Impact:")
+        explicit_impact.show()
+        print("Viral Tracks:")
+        viral_tracks.show()
+        print("Artist Popularity Factors:")
+        aggregated_artist_data.show()
+
+
+    # Impact of explicit lyrics on popularity
+    if False:
+        explicit_impact = spark.sql("""
+            SELECT explicit, AVG(spotify_popularity) as avg_popularity, COUNT(*) as total_tracks, MAX(spotify_popularity) as max_popularity,
+            first(country) as country,
+            first(rank) as rank,
+            first(track_id) as track_id,
+            first(track) as track,
+            first(artist) as artist,
+            first(artist_id) as artist_id,
+            first(album) as album,
+            first(release_date) as release_date,
+            first(danceability) as danceability,
+            first(energy) as energy,
+            first(key) as key,
+            first(loudness_dB) as loudness_dB,
+            first(mode) as mode,
+            first(speechiness) as speechiness,
+            first(acousticness) as acousticness,
+            first(instrumentalness) as instrumentalness,
+            first(liveness) as liveness,
+            first(valence) as valence,
+            first(tempo_bpm) as tempo_bpm,
+            first(duration_min) as duration_min
+            FROM spotify s
+            GROUP BY explicit
+        """)
