@@ -12,6 +12,9 @@ This project focuses on analyzing music data to uncover trends in the industry, 
 
 The project showcases a complete end-to-end data pipeline that performs ingestion, transformation, augmentation, and visualization of music data. The goal is to demonstrate the capabilities of big data technologies for real-time analysis and visual representation of large-scale data.
 
+---
+
+
 ## Features & Functionality
 - **Data Ingestion**: Extracts top tracks and related information (audio features, popularity, listener counts) from Spotify and Last.fm APIs for 15 different countries.
 - **Data Enrichment**: Enhances the Last.fm data with additional audio features from Spotify.
@@ -19,6 +22,9 @@ The project showcases a complete end-to-end data pipeline that performs ingestio
 - **Data Augmentation**: Augments the datasets with artist and album details for comprehensive analysis.
 - **Machine Learning Enhancement**: Applies clustering and dimensionality reduction techniques to uncover hidden patterns in the music data.
 - **Dashboard Visualizations**: Presents insights on music trends, genre performance, and artist success via a Kibana dashboard.
+
+---
+
 
 ## Project Structure
 The project is organized into several key steps within the data pipeline, each having its own Airflow task.
@@ -55,7 +61,11 @@ The project is organized into several key steps within the data pipeline, each h
 - Indexes the processed data into Elasticsearch for easy retrieval and visualization.
 - Visualized in a Kibana dashboard, including charts, tables, and interactive maps.
 
+---
+
+
 ## Technologies Used
+
 - **Python**: For scripting and API interactions (Spotify, Last.fm).
 - **Apache Airflow**: For orchestrating the end-to-end data pipeline.
 - **Apache Spark**: For processing and transforming the large extracted datasets efficiently.
@@ -67,6 +77,9 @@ The project is organized into several key steps within the data pipeline, each h
 ## APIs Used
 - [Spotify API](https://developer.spotify.com/documentation/web-api/)
 - [Last.fm API](https://www.last.fm/api)
+
+---
+
 
 ## Video, Screenshots & Illustrations
 
