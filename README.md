@@ -90,7 +90,7 @@ The project is organized into several key steps within the data pipeline, each h
 - **Page "Song Trends & Taste"**
 
   ![Song Trends Image](images/trends.png)
-  ![Song Trends Image](images/trends2.png)
+  ![Song Trends Image](images/trends2_.png)
   
 - **Page "Genre Traits & Appeal"**
   
